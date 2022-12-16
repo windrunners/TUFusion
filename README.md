@@ -3,10 +3,10 @@
 1. Downloading data set
 Download MSCOCO as a file named "MSCOCO 2014" and place the file in the main folder, then you can train.
 
-2. train
+2. train:
 Run the "train_tufusion.py" file.
 
-3. test
+3. test:
 Run the "test_image.py" file.
 
 4. Download the best models for our study
