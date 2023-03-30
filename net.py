@@ -7,6 +7,7 @@ from einops import rearrange
 from einops.layers.torch import Rearrange
 import fusion_strategy
 
+
 # Convolution operation
 class ConvLayer(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride, is_last=False):
@@ -346,11 +347,19 @@ class TUFusion_net(nn.Module):
         # f_fusion = fusion_function(en1[0], en2[0])
         return [f_fusion]
 
+    def fusion2(self, en1, en2, p_type):
+        fusion_function = fusion_strategy.attention_mechanism_fusion
+        f_fusion = fusion_function(en1[0], en2[0], p_type)
+        return [f_fusion]
+
     def decoder(self, en):
         x = self.layer1(en[0])
         x = self.layer2(x)
         output = self.outc(x)
         return [output]
+
+
+
 
 
 

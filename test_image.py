@@ -2,29 +2,26 @@
 import torch
 from torch.autograd import Variable
 from net import TUFusion_net
-from fusion_strategy import spatial_fusion
 import utils
 from args_fusion import args
 import numpy as np
-import time
-import cv2
 import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_model(path, input_nc, output_nc):
 
-	tufusion_model = TUFusion_net(input_nc, output_nc)
-	tufusion_model.load_state_dict(torch.load(path))
+	nest_model = TUFusion_net(input_nc, output_nc)
+	nest_model.load_state_dict(torch.load(path))
 
-	para = sum([np.prod(list(p.size())) for p in tufusion_model.parameters()])
+	para = sum([np.prod(list(p.size())) for p in nest_model.parameters()])
 	type_size = 4
-	print('Model {} : params: {:4f}M'.format(tufusion_model._get_name(), para * type_size / 1000 / 1000))
+	print('Model {} : params: {:4f}M'.format(nest_model._get_name(), para * type_size / 1000 / 1000))
 
-	tufusion_model.eval()
-	tufusion_model.to(device)
+	nest_model.eval()
+	nest_model.to(device)
 
-	return tufusion_model
+	return nest_model
 
 
 def _generate_fusion_image(model, strategy_type, img1, img2, p_type):
@@ -34,12 +31,14 @@ def _generate_fusion_image(model, strategy_type, img1, img2, p_type):
 
 
 	# fusion: hybrid, channel and spatial
-	f = model.fusion(en_r, en_v, p_type)
+	# f = model.fusion(en_r, en_v, p_type)
 
 
 	# fusion: addition
 	# f = model.fusion1(en_r, en_v)
 
+	# fusion: composite attention
+	f = model.fusion2(en_r, en_v, p_type)
 
 	# decoder
 	img_fusion = model.decoder(f)
@@ -62,7 +61,7 @@ def run_demo(model, infrared_path, visible_path, output_path_root, index, fusion
 	img_fusion = _generate_fusion_image(model, strategy_type, ir_img, vis_img, p_type)
 
 	############################ multi outputs ##############################################
-	file_name = str(index)  + '.jpg'
+	file_name = str(index) + '.jpg'
 	output_path = output_path_root + file_name
 	# # save images
 
@@ -90,11 +89,10 @@ def vision_features(feature_maps, img_type):
 
 
 def main():
-	# run demo
+
 	test_path = "images/IV_images/"
 	network_type = 'TUfusion'
-	# fusion_type = 'auto'  # auto, fusion_layer, fusion_all
-	strategy_type_list = ['addition']
+	strategy_type_list = ['addition', 'attention_weight']
 
 	output_path = './outputs/'
 	strategy_type = strategy_type_list[0]
@@ -116,8 +114,8 @@ def main():
 		model_path = args.model_path_rgb
 
 	with torch.no_grad():
-		print('SSIM weight ----- ' + args.ssim_path[0])
-		ssim_weight_str = args.ssim_path[0]
+		print('SSIM weight ----- ' + args.ssim_path[2])
+		ssim_weight_str = args.ssim_path[2]
 		model = load_model(model_path, in_c, out_c)
 		for i in range(21):
 			index = i + 1
