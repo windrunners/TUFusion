@@ -11,17 +11,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_model(path, input_nc, output_nc):
 
-	nest_model = TUFusion_net(input_nc, output_nc)
-	nest_model.load_state_dict(torch.load(path))
+	TUFusion_model = TUFusion_net(input_nc, output_nc)
+	TUFusion_model.load_state_dict(torch.load(path))
 
-	para = sum([np.prod(list(p.size())) for p in nest_model.parameters()])
+	para = sum([np.prod(list(p.size())) for p in TUFusion_model.parameters()])
 	type_size = 4
-	print('Model {} : params: {:4f}M'.format(nest_model._get_name(), para * type_size / 1000 / 1000))
+	print('Model {} : params: {:4f}M'.format(TUFusion_model._get_name(), para * type_size / 1000 / 1000))
 
-	nest_model.eval()
-	nest_model.to(device)
+	TUFusion_model.eval()
+	TUFusion_model.to(device)
 
-	return nest_model
+	return TUFusion_model
 
 
 def _generate_fusion_image(model, strategy_type, img1, img2, p_type):
@@ -29,10 +29,8 @@ def _generate_fusion_image(model, strategy_type, img1, img2, p_type):
 	en_r = model.encoder(img1)
 	en_v = model.encoder(img2)
 
-
 	# fusion: hybrid, channel and spatial
 	# f = model.fusion(en_r, en_v, p_type)
-
 
 	# fusion: addition
 	# f = model.fusion1(en_r, en_v)
@@ -50,7 +48,6 @@ def run_demo(model, infrared_path, visible_path, output_path_root, index, fusion
 	ir_img = utils.get_test_images(infrared_path, height=None, width=None, mode=mode)
 	vis_img = utils.get_test_images(visible_path, height=None, width=None, mode=mode)
 
-
 	if args.cuda:
 		ir_img = ir_img.to(device)
 		vis_img = vis_img.to(device)
@@ -60,11 +57,11 @@ def run_demo(model, infrared_path, visible_path, output_path_root, index, fusion
 
 	img_fusion = _generate_fusion_image(model, strategy_type, ir_img, vis_img, p_type)
 
-	############################ multi outputs ##############################################
+	# multi outputs
 	file_name = str(index) + '.jpg'
 	output_path = output_path_root + file_name
-	# # save images
-
+	
+	# save images
 	if args.cuda:
 		img = img_fusion.cpu().clamp(0, 255).data[0].numpy()
 	else:
