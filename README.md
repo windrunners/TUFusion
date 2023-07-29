@@ -1,4 +1,6 @@
 # TUFusion
+TUFusion is an image fusion algorithm, more precisely, a versatile or universal image fusion algorithm that can be applied across multiple domains. Currently, the algorithm has demonstrated excellent performance in areas such as infrared-visible, multi-exposure, and multi-modal medical image fusion. Unlike other image fusion algorithms, TUFusion requires only one set of weights and models to handle multiple tasks effectively.
+
 
 1. Downloading data set
 Download MSCOCO as a file named "MSCOCO 2014" and place the file in the main folder, then you can train.
