@@ -60,7 +60,7 @@ def run_demo(model, infrared_path, visible_path, output_path_root, index, fusion
 	ir_img_resize = F.interpolate(ir_img, size=(256,256), mode='bilinear', align_corners=False)
 	vis_img_resize = F.interpolate(vis_img, size=(256,256), mode='bilinear', align_corners=False)
 
-	img_fusion = _generate_fusion_image(model, strategy_type, ir_img, vis_img, p_type)
+	img_fusion = _generate_fusion_image(model, strategy_type, ir_img_resize, vis_img_resize, p_type)
 	img_fusion = F.interpolate(img_fusion, size=(dimension[2], dimension[3]), mode='bilinear', align_corners=False)
 
 	# multi outputs
