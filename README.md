@@ -41,7 +41,10 @@ password: rmsj
     title={TUFusion: A Transformer-based Universal Fusion Algorithm for Multimodal Images},
     author={Zhao, Yangyang and Zheng, Qingchun and Zhu, Peihao and Zhang, Xu and Ma, Wenpeng},
     journal={IEEE Transactions on Circuits and Systems for Video Technology},
-    year={2023},
+    volume={34},
+    number={3},
+    pages={1712--1725},
+    year={2024},
     publisher={IEEE}
 }
 ```
